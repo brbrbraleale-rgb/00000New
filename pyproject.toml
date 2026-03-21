@@ -1,16 +1,28 @@
 [project]
-name = "pythonprojectnew"
+name = "pythonproject4"
 version = "0.1.0"
 description = ""
 authors = [
     {name = "Безгина Анастасия",email = "brbrbraleale@gmail.com"}
 ]
+package-mode = false
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "pytest (==9.0.2)"
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "black (>=26.3.1,<27.0.0)",
+    "flake8 (>=7.3.0,<8.0.0)",
+    "isort (>=8.0.1,<9.0.0)"
+]
+[tool.black]
+line-length = 119
+[tool.isort]
+profile = "black"
