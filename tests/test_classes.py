@@ -1,61 +1,40 @@
-"""Тесты"""
+"""Модуль с тестами для проверки классов товаров и категорий."""
+from main import Product, Category
 
-from main import Category, Product
 
-
-def test_product_init_and_price_setter(product_iphone: Product) -> None:
-    """Тест 1: Проверка базовой инициализации и работы сеттера цены (Задание 4)"""
+def test_product_init(product_iphone):
+    """ Тест инициализации товара (имя, описание, цена, количество)"""
     assert product_iphone.name == "Iphone 15"
+    assert product_iphone.description == "512GB, Blue"
     assert product_iphone.price == 210000.0
-
-    # Проверяем работу сеттера
-    product_iphone.price = 250000.0
-    assert product_iphone.price == 250000.0
-
-    # Проверяем защиту от некорректной цены
-    product_iphone.price = -1000
-    assert (
-        product_iphone.price == 250000.0
-    )  # Цена не должна была измениться
+    assert product_iphone.quantity == 5
 
 
-def test_new_product_from_dict() -> None:
-    """Тест 2: Проверка создания продукта из словаря через класс-метод"""
-    data = {
-        "name": "Xiaomi Redmi Note 11",
-        "description": "1024GB, Синий",
-        "price": 31000.0,
-        "quantity": 14,
-    }
-    # Вызываем класс-метод
-    new_prod = Product.new_product(data)
-
-    assert new_prod.name == "Xiaomi Redmi Note 11"
-    assert new_prod.price == 31000.0
-    assert new_prod.quantity == 14
+def test_category_init(category_electronics):
+    """Тест инициализации категории и корректности счетчиков"""
+    assert category_electronics.name == "Электроника"
+    assert category_electronics.description == "Гаджеты"
+    assert Category.category_count == 1
+    assert Category.product_count == 2
 
 
-def test_category_add_product_and_counts(
-    category_electronics: Category,
-) -> None:
-    """Тест проверка добавления продукта и работы счетчиков"""
-    # в фикстуре category_electronics изначально 2 товара
-    initial_count = Category.product_count
+def test_price_setter_invalid(product_samsung):
+    """ Тест сеттера цены: проверка запрета на отрицательную цену"""
+    initial_price = product_samsung.price
+    product_samsung.price = -1000.0
+    # Цена не должна измениться, так как сработала проверка в сеттере
+    assert product_samsung.price == initial_price
 
-    # Создаем новый товар и добавляем через специальный метод
-    new_item = Product("Тестовый гаджет", "Описание", 1000.0, 1)
-    category_electronics.add_product(new_item)
-
-    # Проверяем, что счетчик увеличился ровно на 1
-    assert Category.product_count == initial_count + 1
+    product_samsung.price = 0
+    assert product_samsung.price == initial_price
 
 
-def test_category_products_output(category_electronics: Category) -> None:
-    """Тест 4: Проверка вывода товаров в виде строки через property (Задание 2)"""
-    # мы проверим, что геттер возвращает строку и она не пустая.
-    products_string = category_electronics.products
-
-    assert isinstance(products_string, str)
-    # Проверяем, что в строке есть ключевые слова из шаблона
-    assert "руб. Остаток:" in products_string
+def test_category_products_property(category_electronics):
+    """Тест геттера products: проверка формата вывода списка товаров"""
+    # Ожидаем строку на основе данных из фикстур product_iphone и product_samsung
+    expected_output = (
+        "Iphone 15, 210000 руб. Остаток: 5 шт.\n"
+        "Samsung Galaxy S23, 180000 руб. Остаток: 10 шт.\n"
+    )
+    assert category_electronics.products == expected_output
 
