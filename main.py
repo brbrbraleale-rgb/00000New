@@ -7,8 +7,31 @@ class Product:
     def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
         self.name = name
         self.description = description
-        self.price = price
         self.quantity = quantity
+        self.price = price  # Используем сеттер для проверки цены
+
+    @property
+    def price(self) -> float:
+        """Геттер для получения цены"""
+        return self.__price
+
+    @price.setter
+    def price(self, new_price: float) -> None:
+        """Сеттер для изменения цены с проверкой"""
+        if new_price <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+        else:
+            self.__price = new_price
+
+    @classmethod
+    def new_product(cls, data: dict):
+        """Создание объекта Product из словаря"""
+        return cls(
+            name=data["name"],
+            description=data["description"],
+            price=data["price"],
+            quantity=data["quantity"],
+        )
 
     def __str__(self) -> str:
         """Строковое отображение продукта"""
