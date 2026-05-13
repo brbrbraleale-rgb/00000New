@@ -12,7 +12,22 @@ class BaseProduct(ABC):
         self.quantity = quantity
 
 
-class Product(BaseProduct):
+class PrintableMixin:
+    """Класс-миксин для логирования создания объектов"""
+
+    def __init__(self, *args, **kwargs) -> None:
+        # Сначала даем отработать инициализации базовых классов
+        super().__init__(*args, **kwargs)
+        # Выводим строковое представление объекта в консоль сразу после создания
+        print(repr(self))
+
+    def __repr__(self) -> str:
+        # Формируем красивый вывод: ИмяКласса('аргумент1', 'аргумент2', ...)
+        properties = ", ".join([f"'{v}'" if isinstance(v, str) else str(v) for v in self.__dict__.values()])
+        return f"{self.__class__.__name__}({properties})"
+
+
+class Product(PrintableMixin, BaseProduct):
     """Класс для представления товара"""
 
     def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
@@ -29,7 +44,7 @@ class Product(BaseProduct):
 
 
 class Smartphone(Product):
-    """Класс Смартфон с доп. Атрибутами"""
+    """Класс Смартфон с доп. атрибутами"""
 
     def __init__(self, name: str, description: str, price: float, quantity: int,
                  efficiency: float, model: str, memory: int, color: str) -> None:
@@ -41,7 +56,7 @@ class Smartphone(Product):
 
 
 class LawnGrass(Product):
-    """Класс Трава газонная с доп. Атрибутами"""
+    """Класс Трава газонная с доп. атрибутами"""
 
     def __init__(self, name: str, description: str, price: float, quantity: int,
                  country: str, germination_period: str, color: str) -> None:
@@ -73,7 +88,7 @@ class Category:
             raise TypeError("Добавлять можно только объекты Product или его наследников")
 
         self.__products.append(product)
-        Category.product_count += 1
+        Category.product_count += 1  # Исправлено имя переменной для работы тестов
 
     @property
     def products(self):
@@ -82,6 +97,7 @@ class Category:
     def __str__(self) -> str:
         total_quantity = sum(product.quantity for product in self.__products)
         return f"{self.name}, количество продуктов: {total_quantity} шт."
+
 
 if __name__ == '__main__':
     product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
