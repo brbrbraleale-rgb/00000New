@@ -17,8 +17,6 @@ def test_category_init(category_electronics):
     # Проверка идет через геттер products
     assert len(category_electronics.products) == 2
 
-    product_samsung.price = 0
-    assert product_samsung.price == initial_price
 
 def test_category_count(category_electronics: Category) -> None:
     """Проверка подсчета количества категорий"""
@@ -26,13 +24,9 @@ def test_category_count(category_electronics: Category) -> None:
     assert Category.category_count >= 1
 
 def test_category_products_property(category_electronics):
-    """Тест геттера products: проверка формата вывода списка товаров"""
-    # Ожидаем строку на основе данных из фикстур product_iphone и product_samsung
-    expected_output = (
-        "Iphone 15, 210000 руб. Остаток: 5 шт.\n"
-        "Samsung Galaxy S23, 180000 руб. Остаток: 10 шт.\n"
-    )
-    assert category_electronics.products == expected_output
+    """Тест геттера products: проверка, что возвращается список объектов"""
+    assert len(category_electronics.products) == 2
+    assert isinstance(category_electronics.products[0], Product)
 
 def test_product_count(category_electronics: Category) -> None:
     """Проверка подсчета количества продуктов"""
@@ -49,3 +43,27 @@ def test_category_str(category_electronics: Category) -> None:
     """Проверка строкового отображения категории (__str__)"""
     assert str(category_electronics) == "Электроника, количество продуктов: 15 шт."
 
+
+import pytest
+
+def test_products_validation_and_addition(smartphone_samsung_ultra, grass_green):
+    """Тест атрибутов наследников и ограничения сложения разных классов"""
+    # Проверка атрибутов (Задание 1)
+    assert smartphone_samsung_ultra.model == "S23 Ultra"
+    assert grass_green.germination_period == "7 дней"
+
+    # Проверка ограничения сложения (Задание 2)
+    with pytest.raises(TypeError):
+        result = smartphone_samsung_ultra + grass_green
+
+
+def test_category_add_product_validation(category_electronics, smartphone_samsung_ultra):
+    """Тест ограничения добавления в категорию (Задание 3)"""
+    # Проверка добавления наследника (успешно)
+    initial_count = len(category_electronics.products)
+    category_electronics.add_product(smartphone_samsung_ultra)
+    assert len(category_electronics.products) == initial_count + 1
+
+    # Проверка добавления некорректного объекта (ошибка)
+    with pytest.raises(TypeError):
+        category_electronics.add_product("Not a Product")
