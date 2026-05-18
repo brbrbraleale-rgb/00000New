@@ -22,7 +22,6 @@ class PrintableMixin:
         print(repr(self))
 
     def __repr__(self) -> str:
-        # Формируем красивый вывод: ИмяКласса('аргумент1', 'аргумент2', ...)
         properties = ", ".join([f"'{v}'" if isinstance(v, str) else str(v) for v in self.__dict__.values()])
         return f"{self.__class__.__name__}({properties})"
 
