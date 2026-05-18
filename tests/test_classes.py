@@ -83,3 +83,32 @@ def test_printable_mixin_output(capsys):
     assert "Тестовый девайс" in captured.out
     assert "500.0" in captured.out
 
+
+def test_product_init_zero_quantity_raises_value_error():
+    """Тест: создание товара с нулевым количеством вызывает ValueError"""
+    with pytest.raises(ValueError) as exc_info:
+        Product("Бракованный товар", "Описание", 100.0, 0)
+
+    assert str(exc_info.value) == "Товар с нулевым количеством не может быть добавлен"
+
+
+def test_product_init_valid_quantity():
+    """Тест: товар с корректным количеством создается без ошибок"""
+    product = Product("Хороший товар", "Описание", 100.0, 5)
+    assert product.quantity == 5
+
+
+def test_category_middle_price_with_products():
+    """Тест: метод middle_price правильно считает среднюю цену товаров в категории"""
+    p1 = Product("Товар 1", "Описание", 100.0, 2)
+    p2 = Product("Товар 2", "Описание", 200.0, 3)
+    p3 = Product("Товар 3", "Описание", 300.0, 1)
+
+    category = Category("Тест", "Описание", [p1, p2, p3])
+    assert category.middle_price() == 200.0
+
+
+def test_category_middle_price_empty_category():
+    """Тест: метод middle_price возвращает 0, если в категории нет товаров"""
+    empty_category = Category("Пустая", "Описание", [])
+    assert empty_category.middle_price() == 0
