@@ -1,5 +1,5 @@
-"""Тесты для категорий и классов"""
-from main import Product, Category
+import pytest
+from main import Product, Category, BaseProduct
 
 
 def test_product_init(product_iphone):
@@ -20,18 +20,18 @@ def test_category_init(category_electronics):
 
 def test_category_count(category_electronics: Category) -> None:
     """Проверка подсчета количества категорий"""
-    # Сбрасываем счетчик для чистоты теста, если это необходимо,
     assert Category.category_count >= 1
+
 
 def test_category_products_property(category_electronics):
     """Тест геттера products: проверка, что возвращается список объектов"""
     assert len(category_electronics.products) == 2
     assert isinstance(category_electronics.products[0], Product)
 
+
 def test_product_count(category_electronics: Category) -> None:
     """Проверка подсчета количества продуктов"""
     assert Category.product_count >= 2
-
 
 
 def test_product_str(product_iphone: Product) -> None:
@@ -44,26 +44,42 @@ def test_category_str(category_electronics: Category) -> None:
     assert str(category_electronics) == "Электроника, количество продуктов: 15 шт."
 
 
-import pytest
-
 def test_products_validation_and_addition(smartphone_samsung_ultra, grass_green):
     """Тест атрибутов наследников и ограничения сложения разных классов"""
-    # Проверка атрибутов (Задание 1)
     assert smartphone_samsung_ultra.model == "S23 Ultra"
     assert grass_green.germination_period == "7 дней"
 
-    # Проверка ограничения сложения (Задание 2)
     with pytest.raises(TypeError):
         result = smartphone_samsung_ultra + grass_green
 
 
 def test_category_add_product_validation(category_electronics, smartphone_samsung_ultra):
     """Тест ограничения добавления в категорию (Задание 3)"""
-    # Проверка добавления наследника (успешно)
     initial_count = len(category_electronics.products)
     category_electronics.add_product(smartphone_samsung_ultra)
     assert len(category_electronics.products) == initial_count + 1
 
-    # Проверка добавления некорректного объекта (ошибка)
     with pytest.raises(TypeError):
         category_electronics.add_product("Not a Product")
+
+# новые тесты
+
+
+def test_base_product_abstract_error():
+    """ Проверка, что нельзя создать объект абстрактного класса BaseProduct"""
+    with pytest.raises(TypeError):
+        # Python выбросит TypeError, так как BaseProduct имеет абстрактные методы
+        BaseProduct("Тест", "Описание", 100, 1)
+
+
+def test_printable_mixin_output(capsys):
+    """ Проверка, что миксин печатает информацию в консоль при создании продукта"""
+    Product("Тестовый девайс", "Проверка миксина", 500.0, 3)
+
+    captured = capsys.readouterr()
+
+    # Проверяет что в выводе присутствует имя класса и параметры
+    assert "Product" in captured.out
+    assert "Тестовый девайс" in captured.out
+    assert "500.0" in captured.out
+
